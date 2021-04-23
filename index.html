@@ -1,0 +1,90 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="heatmap.css">
+</head>
+
+<body>
+
+    <h1>Nathanial Hapeman's Heatmap</h1>
+
+    <!-- Heatmap -->
+    <div class="heatmap">
+
+        <div class="canvas-wrapper">
+            <canvas id="image-canvas" width="800" height="500"></canvas>
+            <canvas id="drawing-canvas" width="800" height="500"></canvas>
+            <div class="x1">0000</div>
+            <div class="x2">1000</div>
+        </div>
+        <div class="controls">
+            <div class="y1">2000</div>
+            <div>
+                <span style="margin-right: 20px" id="zoom-text">Zoom: 1.0x</span>
+                <button id="zoom-in">+</button>
+                <button id="zoom-out">-</button>
+                <button id="move-left">&#9668;</button>
+                <button id="move-up">&#9650;</button>
+                <button id="move-down">&#9660;</button>
+                <button id="move-right">&#9658;</button>
+            </div>
+            <div class="y2">3000</div>
+        </div>
+
+        <!-- Heatmap inspecting tools -->
+        <div class="inspecting-tools">
+            Data Source:
+            <select name="data-source" id="data-source">
+                <option value="grid">grid</option>
+                <option value="checkerboard">checkerboard</option>
+                <option value="increasing">increasing</option>
+                <option value="blank">blank</option>
+                <option value="lit">lit</option>
+            </select>
+
+            <div class="exporting">
+                Export as:
+                <input type="radio" id="png-type" value="png" name="data-type">
+                <label for="png-type">PNG</label>
+                <input type="radio" id="json-type" value="json" name="data-type">
+                <label for="json-type">JSON</label>
+                <button id="export-button">Export</button>
+                <button id="clear-button">Clear Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="details">
+        <h3>Directions:</h3>
+        <p>Draw a box and export your selection. Choose between png and json.
+            Zoom in and move around with the controls. </p>
+        <h3>Assumptions:</h3>
+        <ul>
+            <li>Values are between 0 and 1</li>
+            <li>A canvas can handle the large amounts of data + zooming</li>
+            <li>Macro trends are more important than inspecting a single cell's exact value</li>
+        </ul>
+        <h3>Implementation details:</h3>
+        <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam eos corrupti dignissimos nulla
+            impedit excepturi voluptate quaerat illum asperiores. Voluptatum, debitis assumenda. Quia laudantium velit
+            temporibus porro nam ea assumenda!
+        </p>
+        <b>Nathanial's portfolio website:</b> <a href="nhapeman.com">nhapeman.com</a>
+    </div>
+
+    <div style="display:none;">
+        <img id="source" src="sample-heatmaps/grid.png">
+    </div>
+
+
+      <script src="heatmap.js"></script>
+      <script src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+/* Canvas */
+.heatmap {
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    width: 800px;
+}
+
+.canvas-wrapper {
+    position: relative;
+}
+
+#image-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+#drawing-canvas {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #c3c3c3;
+    z-index: 0;
+}
+
+/* Axis + controls */
+.x1 {
+    position: absolute;
+    text-align: right;
+    top: 0;
+    right: 100%;
+    padding-right: 5px;
+}
+
+.x2 {
+    position: absolute;
+    text-align: right;
+    bottom: 0;
+    right: 100%;
+    padding-right: 5px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+/* Inspecting Tools */
+.inspecting-tools {
+    display: flex;
+    margin: 10px auto 0;
+    width: 800px;
+}
+
+select {
+    margin-left: 10px;
+}
+
+#export-button {
+    margin-left: 10px;
+}
+
+.exporting {
+    margin-left: auto;
+    display: inline;
+}
