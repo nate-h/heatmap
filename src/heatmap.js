@@ -203,6 +203,23 @@ class Heatmap
     }
 
     /**
+     * Updates the four axis labels.
+     */
+     updateSelectedRegionDisplay() {
+        if (this.selectedRegion) {
+            document.getElementById("export-button").disabled = false;
+            let start = `${this.selectedRegion.x1}, ${this.selectedRegion.y1}`;
+            let stop = `${this.selectedRegion.x2}, ${this.selectedRegion.y2}`;
+            document.getElementById("selected-region-start").innerHTML = start;
+            document.getElementById("selected-region-stop").innerHTML = stop;
+        } else {
+            document.getElementById("export-button").disabled = true;
+            document.getElementById("selected-region-start").innerHTML = 'na';
+            document.getElementById("selected-region-stop").innerHTML = 'na';
+        }
+    }
+
+    /**
      * Draws heatmap on a dedicated image canvas.
      */
     drawHeatmap() {
@@ -234,6 +251,7 @@ class Heatmap
      */
     drawSelection() {
         this.clearSelection();
+        this.updateSelectedRegionDisplay();
         if (this.selectedRegion) {
             // Translate values since upper left may not be 0,0.
             let translatedX1 = this.selectedRegion.x1 - this.xMin;
