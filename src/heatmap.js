@@ -378,20 +378,49 @@ class Heatmap
         // Export data for specified type.
         if (exportType === 'png') {
             // Extract coordinates of canvas where region is.
-            // let translatedX1 = this.selectedRegion.x1 - this.xMin;
-            // let translatedX2 = this.selectedRegion.x2 - this.xMin;
-            // let translatedY1 = this.selectedRegion.y1 - this.yMin;
-            // let translatedY2 = this.selectedRegion.y2 - this.yMin;
+            let translatedXs = xs - this.xMin;
+            let translatedYs = ys - this.yMin;
+            let translatedXe = xe - this.xMin;
+            let translatedYe = ye - this.yMin;
+            this.saveSnapshot(`${fileName}.png`, translatedXs, translatedYs,
+                translatedXe, translatedYe);
         } else {
-            let exportedData = [];
-            let rows = this.data.slice(ys, ye + 1);
-            for (const row of rows) {
-                let values = row.slice(xs, xe + 1);
-                exportedData.push(values);
-            }
-
+            const exportedData = this.extractJsonFromRegion(xs, ys, xe, ye);
             this.saveJSON(exportedData, `${fileName}.json`);
         }
+    }
+
+    extractJsonFromRegion(xs, ys, xe, ye) {
+        let exportedData = [];
+        let rows = this.data.slice(ys, ye + 1);
+        for (const row of rows) {
+            let values = row.slice(xs, xe + 1);
+            exportedData.push(values);
+        }
+        return exportedData;
+    }
+
+    saveSnapshot(filename, xs, ys, xe, ye) {
+
+        let w = xe - xs;
+        let h = ye - ys;
+
+        // Create new canvas and draw region to it.
+        const newCanvas = document.createElement('canvas');
+        newCanvas.width = w;
+        newCanvas.height = h;
+        const newContext = newCanvas.getContext('2d');
+        newContext.drawImage(this.imageCanvas, xs, ys, w, h, 0, 0, w, h);
+
+        // Create image and download it.
+        const newImage = document.createElement('img');
+        newImage.src = newCanvas.toDataURL("image/png");
+        const a = document.createElement('a');
+        a.href = newImage.src;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
     saveJSON(data, filename){
