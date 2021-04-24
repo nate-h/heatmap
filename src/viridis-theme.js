@@ -98,7 +98,7 @@ const viridisTheme = [
     [0.926106, 0.89733 , 0.104071],
     [0.945636, 0.899815, 0.112838],
     [0.974417, 0.90359 , 0.130215],
-    [0.993248, 0.906157, 0.143936],
+    [0.993248, 0.906157, 0.143936]
 ]
 
 /**
@@ -107,4 +107,13 @@ const viridisTheme = [
  */
 function get_color(value0to1) {
     return viridisTheme[Math.trunc(value0to1 * 99)];
+}
+
+
+// Exports for testing.
+if (typeof exports !== 'undefined') {
+    module.exports = {
+        viridisTheme,
+        get_color
+    };
 }
