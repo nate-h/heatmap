@@ -1,4 +1,4 @@
-const viridisTheme = [
+const viridis = [
     [0.267004, 0.004874, 0.329415],
     [0.269944, 0.014625, 0.341379],
     [0.273809, 0.031497, 0.358853],
@@ -106,14 +106,14 @@ const viridisTheme = [
  * @param {number} value0to1 A 0->1 value to convert to a rgb color viridis slice.
  */
 function get_color(value0to1) {
-    return viridisTheme[Math.trunc(value0to1 * 99)];
+    return viridis[Math.trunc(value0to1 * 99)];
 }
 
 
 // Exports for testing.
 if (typeof exports !== 'undefined') {
     module.exports = {
-        viridisTheme,
+        viridis,
         get_color
     };
 }
