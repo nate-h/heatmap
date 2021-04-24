@@ -13,6 +13,12 @@ class Heatmap
         this.endY = 0;
         this._zoom = 1;
 
+        // Our axis label values.
+        this.x1 = 0;
+        this.x2 = 0;
+        this.y1 = 0;
+        this.y2 = 0;
+
         // Setup canvases.
         this.imageCanvas = document.getElementById('image-canvas');
         this.imageContext = this.imageCanvas.getContext('2d');
@@ -83,14 +89,6 @@ class Heatmap
         });
     }
 
-    get width() {
-        return this.drawingCanvas.width;
-    }
-
-    get height() {
-        return this.drawingCanvas.height;
-    }
-
     get zoom() {
         return this._zoom;
     }
@@ -102,6 +100,10 @@ class Heatmap
 
     }
 
+    /**
+     * Load local json file and redraw canvas.
+     * @param {string} source The filename of the local data source.
+     */
     setupDataSource(source) {
 
         fetch(`sample-heatmaps/${source}.json`)
@@ -118,8 +120,21 @@ class Heatmap
             this.drawingCanvas.width = width;
             this.drawingCanvas.height = height;
 
+            // Our axis label values.
+            this.x1 = 0;
+            this.x2 = width - 1;
+            this.y1 = 0;
+            this.y2 = height - 1;
+
             this.drawAll();
         });
+    }
+
+    updateAxis() {
+        document.getElementById("x1").innerHTML = this.x1;
+        document.getElementById("x2").innerHTML = this.x2;
+        document.getElementById("y1").innerHTML = this.y1;
+        document.getElementById("y2").innerHTML = this.y2;
     }
 
     /**
@@ -127,6 +142,7 @@ class Heatmap
      */
     drawAll() {
         console.log('Draw all');
+        this.updateAxis();
         this.drawHeatmap();
         this.drawSelection();
     }

@@ -19,11 +19,11 @@
         <div class="canvas-wrapper">
             <canvas id="image-canvas" width="800" height="500"></canvas>
             <canvas id="drawing-canvas" width="800" height="500"></canvas>
-            <div class="x1">0000</div>
-            <div class="x2">1000</div>
+            <div id="x1">0000</div>
+            <div id="x2">1000</div>
         </div>
         <div class="controls">
-            <div class="y1">2000</div>
+            <div id="y1">2000</div>
             <div>
                 <span style="margin-right: 20px" id="zoom-text">Zoom: 1.0x</span>
                 <button id="zoom-in">+</button>
@@ -33,16 +33,16 @@
                 <button id="move-down">&#9660;</button>
                 <button id="move-right">&#9658;</button>
             </div>
-            <div class="y2">3000</div>
+            <div id="y2">3000</div>
         </div>
 
         <!-- Heatmap inspecting tools -->
         <div class="inspecting-tools">
             Data Source:
             <select name="data-source" id="data-source">
-                <option value="increasing_values_10x10">increasing_values_10x10</option>
                 <option value="logo">logo</option>
                 <option value="noise_1000x1000">noise_1000x1000</option>
+                <option value="increasing_values_10x10">increasing_values_10x10</option>
                 <option value="noise_5x5">noise_5x5</option>
                 <option value="simple_test">simple_test</option>
             </select>
