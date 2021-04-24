@@ -14,10 +14,10 @@ class Heatmap
         this._zoom = 1;
 
         // Our axis label values.
-        this.x1 = 0;
-        this.x2 = 0;
-        this.y1 = 0;
-        this.y2 = 0;
+        this.xMin = 0;
+        this.xMax = 0;
+        this.yMin = 0;
+        this.yMax = 0;
 
         // Setup canvases.
         this.imageCanvas = document.getElementById('image-canvas');
@@ -121,20 +121,20 @@ class Heatmap
             this.drawingCanvas.height = height;
 
             // Our axis label values.
-            this.x1 = 0;
-            this.x2 = width - 1;
-            this.y1 = 0;
-            this.y2 = height - 1;
+            this.xMin = 0;
+            this.xMax = width - 1;
+            this.yMin = 0;
+            this.yMax = height - 1;
 
             this.drawAll();
         });
     }
 
     updateAxis() {
-        document.getElementById("x1").innerHTML = this.x1;
-        document.getElementById("x2").innerHTML = this.x2;
-        document.getElementById("y1").innerHTML = this.y1;
-        document.getElementById("y2").innerHTML = this.y2;
+        document.getElementById("x-min").innerHTML = this.xMin;
+        document.getElementById("x-max").innerHTML = this.xMax;
+        document.getElementById("y-min").innerHTML = this.yMin;
+        document.getElementById("y-max").innerHTML = this.yMax;
     }
 
     /**

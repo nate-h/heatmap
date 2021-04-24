@@ -33,18 +33,18 @@ canvas {
 }
 
 /* Axis + controls */
-#x1, #x2 {
+#x-min, #x-max {
     position: absolute;
     text-align: right;
     right: 100%;
     padding-right: 5px;
 }
 
-#x1 {
+#x-min {
     top: 0;
 }
 
-#x2 {
+#x-max {
     bottom: 0;
 }
 
