@@ -8,7 +8,6 @@ class Heatmap
         this.data = null;
         this.isDrawingRect = false;
         this._zoom = 1;
-
         this.selectedRegion = null;
 
         // Our axis label values.
@@ -61,7 +60,7 @@ class Heatmap
 
         // Define button behaviors.
         document.getElementById("export-button").addEventListener('click', e => {
-            console.log('Export');
+            this.exportData();
         });
         document.getElementById("clear-button").addEventListener('click', e => {
             this.selectedRegion = null;
@@ -92,6 +91,14 @@ class Heatmap
         document.getElementById("move-right").addEventListener('click', e => {
             this.move('right');
         });
+
+        // Set default export type.
+        let exportRadioButtons = document.getElementsByName('export-type');
+        for (const radioButton of exportRadioButtons) {
+            if (radioButton.value === 'png') {
+                radioButton.checked = true;
+            }
+        }
     }
 
     get zoom() {
@@ -177,6 +184,8 @@ class Heatmap
             this.xMax = width - 1;
             this.yMin = 0;
             this.yMax = height - 1;
+
+            this.selectedRegion = null;
 
             // Resetting zoom also redraws everything.
             this.zoom = 1;
@@ -328,11 +337,89 @@ class Heatmap
                 this.xMin = newXMin;
                 break;
             default:
-                console.error("Should have hit a case in move direction.");
+                console.error("Should have hit a move direction case.");
                 break;
         }
 
         // Now finally redraw everything after updating our position.
         this.drawAll();
+    }
+
+    exportData() {
+
+        // Bail if got here without selecting a region.
+        if (!this.selectedRegion) {
+            return;
+        }
+
+        // Get default export type.
+        let exportType = '';
+        let exportTypes = document.getElementsByName('export-type');
+        for (const radioButton of exportTypes) {
+            if (radioButton.checked) {
+                exportType = radioButton.value;
+            }
+        }
+
+        // Get some info about the download.
+        // Possibly correct the upper-left corner.
+        let x1 =  this.selectedRegion.x1;
+        let y1 =  this.selectedRegion.y1;
+        let x2 =  this.selectedRegion.x2;
+        let y2 =  this.selectedRegion.y2;
+
+        let xs = Math.min(x1, x2);
+        let ys = Math.min(y1, y2);
+        let xe = Math.max(x1, x2);
+        let ye = Math.max(y1, y2);
+        let source = document.getElementById('data-source').value;
+        let fileName = `heatmap_${source}_${xs}_${ys}_${xe}_${ye}`;
+
+        // Export data for specified type.
+        if (exportType === 'png') {
+            // Extract coordinates of canvas where region is.
+            // let translatedX1 = this.selectedRegion.x1 - this.xMin;
+            // let translatedX2 = this.selectedRegion.x2 - this.xMin;
+            // let translatedY1 = this.selectedRegion.y1 - this.yMin;
+            // let translatedY2 = this.selectedRegion.y2 - this.yMin;
+        } else {
+            let exportedData = [];
+            let rows = this.data.slice(ys, ye + 1);
+            for (const row of rows) {
+                let values = row.slice(xs, xe + 1);
+                exportedData.push(values);
+            }
+
+            this.saveJSON(exportedData, `${fileName}.json`);
+        }
+    }
+
+    saveJSON(data, filename){
+
+        // Bail if no data.
+        if(!data) {
+            console.error('No data');
+            return;
+        }
+
+        // Correct for no name supplied.
+        if(!filename) {
+            filename = 'noName.json';
+        }
+
+        // Stringify json.
+        if(typeof data === "object"){
+            data = JSON.stringify(data, undefined, 4);
+        }
+
+        // Simulate clicking on button that downloads data.
+        let blob = new Blob([data], {type: 'text/json'});
+        let e = document.createEvent('MouseEvents');
+        let a = document.createElement('a');
+        a.download = filename;
+        a.href = window.URL.createObjectURL(blob);
+        a.dataset.downloadurl =  ['text/json', a.download, a.href].join(':');
+        e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        a.dispatchEvent(e);
     }
 }
