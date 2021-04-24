@@ -3,6 +3,11 @@ html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+    width: 800px;
+    margin: 20px auto;
+}
+
 h1 {
     text-align: center;
     margin: 30px;
@@ -10,7 +15,6 @@ h1 {
 
 .details {
     margin: 30px auto 0;
-    width: 800px;
     border-top: 1px solid #666;
     padding-top: 20px;
 }

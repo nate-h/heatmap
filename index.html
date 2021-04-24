@@ -25,6 +25,16 @@
         <div class="controls">
             <div id="y-min">0</div>
             <div>
+                <span>
+                    Data Source
+                    <select name="data-source" id="data-source">
+                        <option value="logo">logo</option>
+                        <option value="noise_1000x1000">noise_1000x1000</option>
+                        <option value="increasing_values_10x10">increasing_values_10x10</option>
+                        <option value="noise_5x5">noise_5x5</option>
+                        <option value="simple_test">simple_test</option>
+                    </select>
+                </span>
                 <span style="margin-right: 20px" id="zoom-text">Zoom: 1.0x</span>
                 <button id="zoom-in">+</button>
                 <button id="zoom-out">-</button>
@@ -38,23 +48,32 @@
 
         <!-- Heatmap inspecting tools -->
         <div class="inspecting-tools">
-            Data Source:
-            <select name="data-source" id="data-source">
-                <option value="logo">logo</option>
-                <option value="noise_1000x1000">noise_1000x1000</option>
-                <option value="increasing_values_10x10">increasing_values_10x10</option>
-                <option value="noise_5x5">noise_5x5</option>
-                <option value="simple_test">simple_test</option>
-            </select>
 
-            <div class="exporting">
-                Export as:
-                <input type="radio" id="png-type" value="png" name="data-type">
-                <label for="png-type">PNG</label>
-                <input type="radio" id="json-type" value="json" name="data-type">
-                <label for="json-type">JSON</label>
-                <button id="export-button">Export</button>
-                <button id="clear-button">Clear Selection</button>
+            <div>
+                <span class="selected-region-display">
+                    <span>Selected Region: <button id="clear-button">Clear</button></span>
+                    <span>
+                        Start:
+                        <span id="selected-region-x1">0</span>, <span id="selected-region-y1">0</span>
+                    </span>
+                    <span>
+                        End:
+                        <span id="selected-region-x2">0</span>, <span id="selected-region-y2">0</span>
+                    </span>
+                </span>
+            </div>
+
+            <div class="export-display">
+                <span>
+                    Export Region: <button id="export-button">Export</button>
+                </span>
+                <span>
+                    Type:
+                    <input type="radio" id="png-type" value="png" name="data-type">
+                    <label for="png-type">PNG</label>
+                    <input type="radio" id="json-type" value="json" name="data-type">
+                    <label for="json-type">JSON</label>
+                </span>
             </div>
         </div>
     </div>

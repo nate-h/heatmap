@@ -32,7 +32,10 @@ canvas {
     z-index: 0;
 }
 
-/* Axis + controls */
+/***********************************************/
+/* Axis */
+/***********************************************/
+
 #x-min, #x-max {
     position: absolute;
     text-align: right;
@@ -48,6 +51,10 @@ canvas {
     bottom: 0;
 }
 
+/***********************************************/
+/* Controls */
+/***********************************************/
+
 .controls {
     display: flex;
     justify-content: space-between;
@@ -55,11 +62,18 @@ canvas {
     margin-top: 5px;
 }
 
+#data-source {
+    margin-right: 20px;
+    margin-left: 5px;
+}
+
+/***********************************************/
 /* Inspecting Tools */
+/***********************************************/
+
 .inspecting-tools {
     display: flex;
     margin: 10px auto 0;
-    width: 800px;
 }
 
 select {
@@ -70,7 +84,13 @@ select {
     margin-left: 10px;
 }
 
-.exporting {
+.selected-region-display {
+    display: flex;
+    flex-direction: column;
+}
+
+.export-display {
+    display: flex;
+    flex-direction: column;
     margin-left: auto;
-    display: inline;
 }
