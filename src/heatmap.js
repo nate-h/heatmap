@@ -39,14 +39,13 @@ class Heatmap
 
         // Setup drag events.
         this.drawingCanvas.addEventListener('mousedown', e => {
-            this.startX = this.endX = e.offsetX;
-            this.startY = this.endY =  e.offsetY;
             this.isDrawingRect = true;
+            [this.startX, this.startY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
+            [this.endX, this.endY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
         });
         this.drawingCanvas.addEventListener('mousemove', e => {
             if (this.isDrawingRect === true) {
-                this.endX = e.offsetX;
-                this.endY = e.offsetY;
+                [this.endX, this.endY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
                 this.drawSelection();
             }
         });
@@ -94,10 +93,42 @@ class Heatmap
     }
 
     set zoom(newZoom) {
-        this._zoom = Math.max(Math.min(newZoom, 10), 1);
-        document.getElementById("zoom-text").innerHTML = `Zoom: ${this._zoom.toFixed(1)}x`;
-        this.drawAll();
 
+        this._zoom = Math.max(Math.min(newZoom, 10), 1);
+
+        // Calculate new dimensions and update bounds.
+        let newHeatmapWidth = Math.round(this.data[0].length / this._zoom);
+        let newHeatmapHeight = Math.round(this.data.length / this._zoom);
+        this.xMax = this.xMin + newHeatmapWidth - 1;
+        this.yMax = this.yMin + newHeatmapHeight - 1;
+
+        // Now update dimensions for both canvas.
+        this.imageCanvas.width = newHeatmapWidth;
+        this.imageCanvas.height = newHeatmapHeight;
+        this.drawingCanvas.width = newHeatmapWidth;
+        this.drawingCanvas.height = newHeatmapHeight;
+
+        // Update zoom text and redraw everything.
+        document.getElementById("zoom-text").innerHTML =
+            `Zoom: ${this._zoom.toFixed(1)}x`;
+        this.drawAll();
+    }
+
+    /**
+     * Converts a canvas position to data index position.
+     * @param {number} canvasX Pixel offset from left of canvas.
+     * @param {number} canvasY Pixel offset from top of canvas.
+     * @returns the index into the data.
+     */
+    canvasPosToHeatmapPos(canvasX, canvasY) {
+
+        let xPercent = canvasX / this.drawingCanvas.clientWidth;
+        let yPercent = canvasY / this.drawingCanvas.clientHeight;
+
+        let x = Math.round(this.xMin + (this.xMax - this.xMin) * xPercent);
+        let y = Math.round(this.yMin + (this.yMax - this.yMin) * yPercent);
+
+        return [x, y];
     }
 
     /**
@@ -126,15 +157,9 @@ class Heatmap
             this.yMin = 0;
             this.yMax = height - 1;
 
-            this.drawAll();
+            // Resetting zoom also redraws everything.
+            this.zoom = 1;
         });
-    }
-
-    updateAxis() {
-        document.getElementById("x-min").innerHTML = this.xMin;
-        document.getElementById("x-max").innerHTML = this.xMax;
-        document.getElementById("y-min").innerHTML = this.yMin;
-        document.getElementById("y-max").innerHTML = this.yMax;
     }
 
     /**
@@ -148,24 +173,40 @@ class Heatmap
     }
 
     /**
+     * Updates the four axis labels.
+     */
+    updateAxis() {
+        document.getElementById("x-min").innerHTML = this.xMin;
+        document.getElementById("x-max").innerHTML = this.xMax;
+        document.getElementById("y-min").innerHTML = this.yMin;
+        document.getElementById("y-max").innerHTML = this.yMax;
+    }
+
+    /**
      * Draws heatmap on a dedicated image canvas.
      */
     drawHeatmap() {
-        let width = this.data[0].length;
-        let height = this.data.length;
-        let imageData = this.imageContext.createImageData(width, height);
-        let index = 0;
-        for (const row of this.data) {
-            for (const value of row) {
-                let color = getColor(value);
-                imageData.data[4 * index + 0] = color[0] * 255;
-                imageData.data[4 * index + 1] = color[1] * 255;
-                imageData.data[4 * index + 2] = color[2] * 255;
-                imageData.data[4 * index + 3] = 255;
-                index += 1;
+        if (this.data) {
+            let width =  this.xMax - this.xMin + 1; // this.data[0].length;
+            let height = this.yMax - this.yMin + 1;
+            let imageData = this.imageContext.createImageData(width, height);
+            let index = 0;
+
+            let rows = this.data.slice(this.yMin, this.yMax + 1);
+
+            for (const row of rows) {
+                let values = row.slice(this.xMin, this.xMax + 1);
+                for (const value of values) {
+                    let color = getColor(value);
+                    imageData.data[4 * index + 0] = color[0] * 255;
+                    imageData.data[4 * index + 1] = color[1] * 255;
+                    imageData.data[4 * index + 2] = color[2] * 255;
+                    imageData.data[4 * index + 3] = 255;
+                    index += 1;
+                }
             }
+            this.imageContext.putImageData(imageData, 0, 0);
         }
-        this.imageContext.putImageData(imageData, 0, 0);
     }
 
     /**
