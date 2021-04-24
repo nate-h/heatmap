@@ -105,7 +105,7 @@ const viridis = [
  * Convert 0->1 float info 3f color vector.
  * @param {number} value0to1 A 0->1 value to convert to a rgb color viridis slice.
  */
-function get_color(value0to1) {
+function getColor(value0to1) {
     return viridis[Math.trunc(value0to1 * 99)];
 }
 
@@ -114,6 +114,6 @@ function get_color(value0to1) {
 if (typeof exports !== 'undefined') {
     module.exports = {
         viridis,
-        get_color
+        getColor
     };
 }

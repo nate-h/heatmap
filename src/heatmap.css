@@ -8,21 +8,27 @@
 
 .canvas-wrapper {
     position: relative;
+    width: 800px;
+    height: 500px;
+    border: 1px solid #c3c3c3;
 }
 
-#image-canvas {
+canvas {
     position: absolute;
     left: 0;
     top: 0;
+    width: 800px;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+}
+
+#image-canvas {
     pointer-events: none;
     z-index: -1;
 }
 
 #drawing-canvas {
-    display: block;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #c3c3c3;
     z-index: 0;
 }
 

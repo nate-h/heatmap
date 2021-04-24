@@ -5,6 +5,7 @@ class Heatmap
 {
     constructor() {
 
+        this.data = null;
         this.isDrawing = false;
         this.startX = 0;
         this.startY = 0;
@@ -18,20 +19,8 @@ class Heatmap
         this.drawingCanvas = document.getElementById('drawing-canvas');
         this.drawingContext = this.drawingCanvas.getContext('2d');
 
-
         // Load initial heatmap data.
         this.setupDataSource(document.getElementById('data-source').value);
-
-        // Load first initial image.
-        this.img = document.getElementById('source');
-        this.img.addEventListener('load', e => {
-            this.drawAll();
-
-            console.log(this.img.width);
-            console.log(this.img.height);
-        });
-
-        // sample-heatmaps/
 
         // Setup mouse drag events.
         this.setupMouseEvents();
@@ -115,16 +104,22 @@ class Heatmap
 
     setupDataSource(source) {
 
-        // console.log(`Changing data source to: ${source}`);
-
-        // let data = require(`sample-heatmaps/${source}.json`);
-
         fetch(`sample-heatmaps/${source}.json`)
         .then(response => response.json())
-        .then(json => console.log(json));
+        .then(json => {
 
-        //debugger
-        //this.drawAll();
+            this.data = json;
+
+            // Change context dimensions to new dimensions.
+            let width = this.data[0].length;
+            let height = this.data.length;
+            this.imageCanvas.width = width;
+            this.imageCanvas.height = height;
+            this.drawingCanvas.width = width;
+            this.drawingCanvas.height = height;
+
+            this.drawAll();
+        });
     }
 
     /**
@@ -140,10 +135,21 @@ class Heatmap
      * Draws heatmap on a dedicated image canvas.
      */
     drawHeatmap() {
-        this.imageContext.drawImage(
-            this.img, 0, 0, this.img.width, this.img.height,
-            0, 0, this.width, this.height
-        );
+        let width = this.data[0].length;
+        let height = this.data.length;
+        let imageData = this.imageContext.createImageData(width, height);
+        let index = 0;
+        for (const row of this.data) {
+            for (const value of row) {
+                let color = getColor(value);
+                imageData.data[4 * index + 0] = color[0] * 255;
+                imageData.data[4 * index + 1] = color[1] * 255;
+                imageData.data[4 * index + 2] = color[2] * 255;
+                imageData.data[4 * index + 3] = 255;
+                index += 1;
+            }
+        }
+        this.imageContext.putImageData(imageData, 0, 0);
     }
 
     /**
