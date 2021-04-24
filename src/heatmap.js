@@ -18,6 +18,10 @@ class Heatmap
         this.drawingCanvas = document.getElementById('drawing-canvas');
         this.drawingContext = this.drawingCanvas.getContext('2d');
 
+
+        // Load initial heatmap data.
+        this.setupDataSource(document.getElementById('data-source').value);
+
         // Load first initial image.
         this.img = document.getElementById('source');
         this.img.addEventListener('load', e => {
@@ -26,6 +30,8 @@ class Heatmap
             console.log(this.img.width);
             console.log(this.img.height);
         });
+
+        // sample-heatmaps/
 
         // Setup mouse drag events.
         this.setupMouseEvents();
@@ -60,6 +66,11 @@ class Heatmap
         document.getElementById("clear-button").addEventListener('click', e => {
             this.isDrawingRect = false;
             this.drawSelection();
+        });
+
+        // Data source change.
+        document.getElementById("data-source").addEventListener('change', e => {
+            this.setupDataSource(e.target.value);
         });
 
         // Zoom/Navigating controls.
@@ -100,6 +111,20 @@ class Heatmap
         document.getElementById("zoom-text").innerHTML = `Zoom: ${this._zoom.toFixed(1)}x`;
         this.drawAll();
 
+    }
+
+    setupDataSource(source) {
+
+        // console.log(`Changing data source to: ${source}`);
+
+        // let data = require(`sample-heatmaps/${source}.json`);
+
+        fetch(`sample-heatmaps/${source}.json`)
+        .then(response => response.json())
+        .then(json => console.log(json));
+
+        //debugger
+        //this.drawAll();
     }
 
     /**
