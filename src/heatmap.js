@@ -6,12 +6,10 @@ class Heatmap
     constructor() {
 
         this.data = null;
-        this.isDrawing = false;
-        this.startX = 0;
-        this.startY = 0;
-        this.endX = 0;
-        this.endY = 0;
+        this.isDrawingRect = false;
         this._zoom = 1;
+
+        this.selectedRegion = null;
 
         // Our axis label values.
         this.xMin = 0;
@@ -40,12 +38,20 @@ class Heatmap
         // Setup drag events.
         this.drawingCanvas.addEventListener('mousedown', e => {
             this.isDrawingRect = true;
-            [this.startX, this.startY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
-            [this.endX, this.endY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
+            let [x, y] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
+            this.selectedRegion = {
+                x1: x,
+                y1: y,
+                x2: x,
+                y2: y
+            };
+
         });
         this.drawingCanvas.addEventListener('mousemove', e => {
             if (this.isDrawingRect === true) {
-                [this.endX, this.endY] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
+                let [x, y] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
+                this.selectedRegion.x2 = x;
+                this.selectedRegion.y2 = y;
                 this.drawSelection();
             }
         });
@@ -58,7 +64,7 @@ class Heatmap
             console.log('Export');
         });
         document.getElementById("clear-button").addEventListener('click', e => {
-            this.isDrawingRect = false;
+            this.selectedRegion = null;
             this.drawSelection();
         });
 
@@ -75,16 +81,16 @@ class Heatmap
             this.zoom -= 0.5;
         });
         document.getElementById("move-left").addEventListener('click', e => {
-            console.log('left');
+            this.move('left');
         });
         document.getElementById("move-up").addEventListener('click', e => {
-            console.log('up');
+            this.move('up');
         });
         document.getElementById("move-down").addEventListener('click', e => {
-            console.log('down');
+            this.move('down');
         });
         document.getElementById("move-right").addEventListener('click', e => {
-            console.log('right');
+            this.move('right');
         });
     }
 
@@ -99,8 +105,23 @@ class Heatmap
         // Calculate new dimensions and update bounds.
         let newHeatmapWidth = Math.round(this.data[0].length / this._zoom);
         let newHeatmapHeight = Math.round(this.data.length / this._zoom);
+
         this.xMax = this.xMin + newHeatmapWidth - 1;
         this.yMax = this.yMin + newHeatmapHeight - 1;
+
+        // Ensure x doesn't overflow.
+        let overflowX = this.xMax - this.data[0].length + 1;
+        if (overflowX > 0) {
+            this.xMin = this.xMin - overflowX;
+            this.xMax = this.xMax - overflowX;
+        }
+
+        // Ensure y doesn't overflow.
+        let overflowY = this.yMax - this.data.length + 1;
+        if (overflowY > 0) {
+            this.yMin = this.yMin - overflowY;
+            this.yMax = this.yMax - overflowY;
+        }
 
         // Now update dimensions for both canvas.
         this.imageCanvas.width = newHeatmapWidth;
@@ -166,7 +187,6 @@ class Heatmap
      * Draws background and possible user selection.
      */
     drawAll() {
-        console.log('Draw all');
         this.updateAxis();
         this.drawHeatmap();
         this.drawSelection();
@@ -214,8 +234,13 @@ class Heatmap
      */
     drawSelection() {
         this.clearSelection();
-        if (this.isDrawingRect) {
-            this.drawRect(this.startX, this.startY, this.endX, this.endY);
+        if (this.selectedRegion) {
+            // Translate values since upper left may not be 0,0.
+            let translatedX1 = this.selectedRegion.x1 - this.xMin;
+            let translatedX2 = this.selectedRegion.x2 - this.xMin;
+            let translatedY1 = this.selectedRegion.y1 - this.yMin;
+            let translatedY2 = this.selectedRegion.y2 - this.yMin;
+            this.drawRect(translatedX1, translatedY1, translatedX2, translatedY2);
         }
     }
 
@@ -247,5 +272,49 @@ class Heatmap
         this.drawingContext.rect(x, y, width, height);
         this.drawingContext.stroke();
         this.drawingContext.closePath();
+    }
+
+    /**
+     * Handle new move direction signals and adjust based on current position.
+     * @param {string} direction which direction we're moving.
+     */
+    move(direction) {
+
+        // The amount moved in both the x and y direction is based off of the
+        // length of the x side only intentionally.
+        // This way you move the same in both the x and y direction.
+        let deltaDir = Math.round((this.xMax - this.xMin) / 10);
+        let heatmapWidth = this.data[0].length;
+        let heatmapHeight = this.data.length ;
+
+
+        switch (direction) {
+            case 'up':
+                let newYMin = Math.max(this.yMin - deltaDir, 0);
+                this.yMax = this.yMax + newYMin - this.yMin;
+                this.yMin = newYMin;
+                break;
+            case 'down':
+                let newYMax = Math.min(this.yMax + deltaDir, heatmapHeight - 1);
+                this.yMin = this.yMin + newYMax - this.yMax;
+                this.yMax = newYMax;
+                break;
+            case 'right':
+                let newXMax = Math.min(this.xMax + deltaDir, heatmapWidth - 1);
+                this.xMin = this.xMin + newXMax - this.xMax;
+                this.xMax = newXMax;
+                break;
+            case 'left':
+                let newXMin = Math.max(this.xMin - deltaDir, 0);
+                this.xMax = this.xMax + newXMin - this.xMin;
+                this.xMin = newXMin;
+                break;
+            default:
+                console.error("Should have hit a case in move direction.");
+                break;
+        }
+
+        // Now finally redraw everything after updating our position.
+        this.drawAll();
     }
 }
