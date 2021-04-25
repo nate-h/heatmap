@@ -81,16 +81,23 @@
 
     <!-- Details -->
     <div class="details">
-        <h3>Directions:</h3>
+        <h3>TL;DR</h3>
         <p>Draw a box and export your selection. Choose between png and json.
             Zoom in and move around with the controls. Explore other data sources.</p>
         <h3>Implementation details:</h3>
-        <ul>
-            <li>Done in raw javascript for the ease of demoing</li>
-            <li>Two canvases are used to separate the heatmap canvas from the rectangles</li>
-            <li>Check out sample-heatmaps/generateMaps.py to see how I generated the json files</li>
-            <li>Created a custom color mapper based on the matplotlib viridis color map</li>
-        </ul>
+        <p>
+            For my interpretation of the prompt, I decided to go a little above and beyond
+            and create a tool that allows you to inspect 2d arrays of normalized floats.
+            You can zoom in and move around and perform click drags to draw rectangles
+            to represent selected regions.
+            A picture can then be exported of the selected region and so can the
+            corresponding values in the underlying data source.
+            Everything runs pretty fast because I'm using 2 canvases to separate the
+            selected region from the colorized heatmap.
+            Some of the things I enjoyed creating were the Viridis color mapper
+            capabilities and the json data sources created with numpy.
+            Check that out here: sample-heatmaps/generateMaps.py.
+        </p>
         <h3>Note:</h3>
         <p>
             I would normally try to find a package that does all the work or
