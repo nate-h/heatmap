@@ -1,3 +1,8 @@
+// Viridis Color Map
+// I created this for my Whirling project for manually creating spectrograms
+// with the viridis color map so it way easy to adapt that for this heatmap
+// implementation.
+
 const viridis = [
     [0.267004, 0.004874, 0.329415],
     [0.269944, 0.014625, 0.341379],
@@ -99,10 +104,10 @@ const viridis = [
     [0.945636, 0.899815, 0.112838],
     [0.974417, 0.90359 , 0.130215],
     [0.993248, 0.906157, 0.143936]
-]
+];
 
 /**
- * Convert 0->1 float info 3f color vector.
+ * Convert 0->1 floats info rgb color vector.
  * @param {number} value0to1 A 0->1 value to convert to a rgb color viridis slice.
  */
 function getColor(value0to1) {

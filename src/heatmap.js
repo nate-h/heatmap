@@ -1,5 +1,11 @@
-// Here's my Heatmap implementation.
-// I use two canvases so I can split up the background from the user selection.
+// Nathanial Hapeman's Heatmap implementation.
+//
+// Two canvases are used to split up the heatmap from the user drawn rectangles.
+// This minimizes draw times while the user is drawing rectangles by not
+// redrawing the background.
+// There are two methods to export the selected region and mouse movement
+// updates text with the value under the cursor.
+// All values are between 0 and 1.
 
 class Heatmap
 {
@@ -15,7 +21,13 @@ class Heatmap
         this.xMax = 0;
         this.yMin = 0;
         this.yMax = 0;
+    }
 
+    /**
+     * Initialize more components that require corresponding html elements
+     * to exist.
+     */
+    initialize() {
         // Setup canvases.
         this.imageCanvas = document.getElementById('image-canvas');
         this.imageContext = this.imageCanvas.getContext('2d');
@@ -45,14 +57,18 @@ class Heatmap
                 y2: y
             };
 
+            // Update mouseover value.
+            document.getElementById("mouse-over-value").innerHTML = this.data[y][x];
         });
         this.drawingCanvas.addEventListener('mousemove', e => {
+            let [x, y] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
             if (this.isDrawingRect === true) {
-                let [x, y] = this.canvasPosToHeatmapPos(e.offsetX, e.offsetY);
                 this.selectedRegion.x2 = x;
                 this.selectedRegion.y2 = y;
                 this.drawSelection();
             }
+            // Update mouseover value.
+            document.getElementById("mouse-over-value").innerHTML = this.data[y][x];
         });
         window.addEventListener('mouseup', e => {
             this.isDrawingRect = false;
@@ -101,10 +117,17 @@ class Heatmap
         }
     }
 
+    /**
+     * Don't expose zoom because the setter is very important.
+     */
     get zoom() {
         return this._zoom;
     }
 
+    /**
+     * Zoom can only be set through this setter so that variables dependent on
+     * the zoom level can be adjusted and checked.
+     */
     set zoom(newZoom) {
 
         this._zoom = Math.max(Math.min(newZoom, 10), 1);
@@ -212,7 +235,7 @@ class Heatmap
     }
 
     /**
-     * Updates the four axis labels.
+     * Updates the text that displays the selected region information.
      */
      updateSelectedRegionDisplay() {
         if (this.selectedRegion) {
@@ -233,7 +256,7 @@ class Heatmap
      */
     drawHeatmap() {
         if (this.data) {
-            let width =  this.xMax - this.xMin + 1; // this.data[0].length;
+            let width =  this.xMax - this.xMin + 1;
             let height = this.yMax - this.yMin + 1;
             let imageData = this.imageContext.createImageData(width, height);
             let index = 0;
@@ -291,12 +314,8 @@ class Heatmap
         this.drawingContext.lineWidth = 1;
 
         // Possibly correct the upper-left corner.
-        let x = Math.min(x1, x2);
-        let y = Math.min(y1, y2);
-        let width = Math.abs(Math.min(x1-x2));
-        let height = Math.abs(Math.min(y1-y2));
-
-        this.drawingContext.rect(x, y, width, height);
+        let [xs, ys, xe, ye] = this.swapSoUpperLeftLowerRight(x1, y1, x2, y2);
+        this.drawingContext.rect(xs, ys, xe - xs, ye - ys);
         this.drawingContext.stroke();
         this.drawingContext.closePath();
     }
@@ -345,6 +364,9 @@ class Heatmap
         this.drawAll();
     }
 
+    /**
+     * Downloads the selected region in either a json and png format.
+     */
     exportData() {
 
         // Bail if got here without selecting a region.
@@ -368,10 +390,7 @@ class Heatmap
         let x2 =  this.selectedRegion.x2;
         let y2 =  this.selectedRegion.y2;
 
-        let xs = Math.min(x1, x2);
-        let ys = Math.min(y1, y2);
-        let xe = Math.max(x1, x2);
-        let ye = Math.max(y1, y2);
+        let [xs, ys, xe, ye] = this.swapSoUpperLeftLowerRight(x1, y1, x2, y2);
         let source = document.getElementById('data-source').value;
         let fileName = `heatmap_${source}_${xs}_${ys}_${xe}_${ye}`;
 
@@ -390,6 +409,28 @@ class Heatmap
         }
     }
 
+    /**
+     * Takes two diagonally positioned points of a rectangle and returns the upper
+     * left and lower right corner respectively
+     * @param {number} x1 one x value of a rectangle
+     * @param {number} y1 one y value of a rectangle
+     * @param {number} x2 the opposing x value
+     * @param {number} y2 the opposing y value
+     * @returns the upper left and lower right points
+     */
+    swapSoUpperLeftLowerRight(x1, y1, x2, y2) {
+        let xs = Math.min(x1, x2);
+        let ys = Math.min(y1, y2);
+        let xe = Math.max(x1, x2);
+        let ye = Math.max(y1, y2);
+
+        return [xs, ys, xe, ye];
+    }
+
+    /**
+     * Extracts a 2d array from a bigger 2d array using the upper left and
+     * lower right corner points.
+     */
     extractJsonFromRegion(xs, ys, xe, ye) {
         let exportedData = [];
         let rows = this.data.slice(ys, ye + 1);
@@ -400,6 +441,10 @@ class Heatmap
         return exportedData;
     }
 
+    /**
+     * Extracts an image from a canvas using upper left and lower right
+     * corner points.
+     */
     saveSnapshot(filename, xs, ys, xe, ye) {
 
         let w = xe - xs;
@@ -423,6 +468,9 @@ class Heatmap
         document.body.removeChild(a);
     }
 
+    /**
+     * Takes a json object and downloads it.
+     */
     saveJSON(data, filename){
 
         // Bail if no data.

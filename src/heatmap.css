@@ -1,4 +1,7 @@
+/***********************************************/
 /* Canvas */
+/***********************************************/
+
 .heatmap {
     display: block;
     margin: 0 auto;
@@ -30,6 +33,14 @@ canvas {
 
 #drawing-canvas {
     z-index: 0;
+}
+
+#mouse-over-value {
+    color: white;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /***********************************************/

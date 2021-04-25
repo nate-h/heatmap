@@ -21,6 +21,7 @@
             <canvas id="drawing-canvas" width="800" height="500"></canvas>
             <div id="x-min">0</div>
             <div id="x-max">0</div>
+            <div id="mouse-over-value">0</div>
         </div>
         <div class="controls">
             <div id="y-min">0</div>
@@ -83,17 +84,25 @@
         <h3>Directions:</h3>
         <p>Draw a box and export your selection. Choose between png and json.
             Zoom in and move around with the controls. Explore other data sources.</p>
+        <h3>Implementation details:</h3>
+        <ul>
+            <li>Done in raw javascript for the ease of demoing</li>
+            <li>Two canvases are used to separate the heatmap canvas from the rectangles</li>
+            <li>Check out sample-heatmaps/generateMaps.py to see how I generated the json files</li>
+            <li>Created a custom color mapper based on the matplotlib viridis color map</li>
+        </ul>
+        <h3>Note:</h3>
+        <p>
+            I would normally try to find a package that does all the work or
+            at the very least use a web framework with sass. But I was
+            shooting for something that would be easy to test.
+        </p>
         <h3>Assumptions:</h3>
         <ul>
             <li>Values are between 0 and 1</li>
             <li>A canvas can handle the large amounts of data + zooming</li>
-            <li>Macro trends are more important than inspecting a single cell's exact value</li>
+            <li>Macro trends are more important than inspecting a single cell's exact value although you can do that</li>
         </ul>
-        <h3>Implementation details:</h3>
-        <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam eos corrupti dignissimos nulla
-            impedit excepturi voluptate quaerat illum asperiores. Voluptatum, debitis assumenda. Quia laudantium velit
-            temporibus porro nam ea assumenda!
-        </p>
         <b>Nathanial's portfolio website:</b> <a href="nhapeman.com">nhapeman.com</a>
     </div>
 
