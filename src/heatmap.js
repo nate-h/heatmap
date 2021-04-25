@@ -500,3 +500,8 @@ class Heatmap
         a.dispatchEvent(e);
     }
 }
+
+// Exports for testing.
+if (typeof exports !== 'undefined') {
+    module.exports = Heatmap;
+}
