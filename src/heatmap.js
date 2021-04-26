@@ -329,10 +329,9 @@ class Heatmap
         // The amount moved in both the x and y direction is based off of the
         // length of the x side only intentionally.
         // This way you move the same in both the x and y direction.
-        let deltaDir = Math.round((this.xMax - this.xMin) / 10);
+        let deltaDir = Math.max(1, Math.round((this.xMax - this.xMin) / 10));
         let heatmapWidth = this.data[0].length;
-        let heatmapHeight = this.data.length ;
-
+        let heatmapHeight = this.data.length;
 
         switch (direction) {
             case 'up':
